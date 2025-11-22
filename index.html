@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Passport Photo Generator - 36 Photos (6x6 Grid)</title>
+    <title>Photo Generator - 36 Photos (35mm x 49.5mm)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
@@ -68,8 +68,8 @@
             justify-items: center;
         }
         .photo-cell {
-            width: 2.9cm;
-            height: 3.7cm;
+            width: 3.5cm;
+            height: 4.95cm;
             border: 1px solid #ccc;
             overflow: hidden;
             display: flex;
@@ -123,11 +123,17 @@
             color: #555;
             font-size: 14px;
         }
+        .cutting-guide {
+            text-align: center;
+            margin: 15px 0;
+            color: #d32f2f;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📷 Passport Photo Generator (36 Photos)</h1>
+        <h1>📷 Photo Generator - 36 Photos</h1>
         
         <div class="upload-section" id="uploadArea">
             <input type="file" id="fileInput" accept="image/*">
@@ -136,7 +142,10 @@
             </button>
             <p>or drag and drop your image here</p>
             <div class="size-info">
-                Each photo: 2.9cm x 3.7cm (exact fit for 6x6 grid on A4 paper)
+                Each photo: 35mm x 49.5mm (perfect 6x6 grid on A4 paper)
+            </div>
+            <div class="cutting-guide">
+                Cut along the grid lines to get 36 identical photos
             </div>
         </div>
 
@@ -252,18 +261,15 @@
             const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
             const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
             
-            // Calculate exact photo dimensions for 6x6 grid with minimal margins
-            const photoWidth = 210 / 6; // 35mm
-            const photoHeight = 297 / 6; // 49.5mm
+            // Exact photo dimensions
+            const photoWidth = 35; // 35mm
+            const photoHeight = 49.5; // 49.5mm
             
-            // But we want standard passport-like proportions, so we'll use a slightly smaller size
-            // that fits well within each cell and leaves small cutting margins
-            const usablePhotoWidth = 29; // 2.9cm
-            const usablePhotoHeight = 37; // 3.7cm
+            // Calculate positions for perfect 6x6 grid
+            // 6 columns: 6 * 35mm = 210mm (exact width of A4)
+            // 6 rows: 6 * 49.5mm = 297mm (exact height of A4)
             
-            // Calculate centering offsets for each photo within its cell
-            const xOffset = (photoWidth - usablePhotoWidth) / 2;
-            const yOffset = (photoHeight - usablePhotoHeight) / 2;
+            // No margins needed - photos will fill entire page
 
             // Load the image and add it 36 times to the PDF (6 rows of 6)
             const img = new Image();
@@ -271,8 +277,8 @@
                 // Add all 36 photos in a 6x6 grid
                 for (let row = 0; row < 6; row++) {
                     for (let col = 0; col < 6; col++) {
-                        const xPos = (col * photoWidth) + xOffset;
-                        const yPos = (row * photoHeight) + yOffset;
+                        const xPos = col * photoWidth;
+                        const yPos = row * photoHeight;
                         
                         // Add the image to PDF at exact size
                         pdf.addImage(
@@ -280,14 +286,14 @@
                             'JPEG', 
                             xPos, 
                             yPos, 
-                            usablePhotoWidth, 
-                            usablePhotoHeight
+                            photoWidth, 
+                            photoHeight
                         );
                     }
                 }
                 
                 // Save the PDF
-                pdf.save('passport-photos-36.pdf');
+                pdf.save('photos-35x49.5-36.pdf');
                 status.textContent = 'PDF generated successfully! Check your downloads folder.';
             };
             
@@ -312,7 +318,7 @@
         }
 
         // Initial instructions
-        status.textContent = 'Please upload your passport photo to begin.';
+        status.textContent = 'Please upload your photo to begin.';
     </script>
 </body>
 </html>
